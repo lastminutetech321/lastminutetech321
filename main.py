@@ -35,15 +35,14 @@ from datetime import datetime
 @app.get("/")
 def root():
     return {"status": "LMT321 live"}
-
-@app.get("/v1/health")
-def v1_health():
+    @app.get("/v1/health")
+    @app.get("/health")
+def health():
     return {
         "status": "ok",
-        "service": "LMT321",
-        "version": "v1",
-        "ts": datetime.utcnow().isoformat()
+        "service": "LMT321"
     }
+
 # ----------------------------
 # Jobs (Phase A: intake + read)
 # ----------------------------
