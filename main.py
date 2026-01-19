@@ -1,3 +1,4 @@
+from pydantic import BaseModel, EmailStr, field_validator
 from fastapi import FastAPI
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List, Literal
