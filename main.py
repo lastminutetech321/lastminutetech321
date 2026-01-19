@@ -35,8 +35,9 @@ from datetime import datetime
 @app.get("/")
 def root():
     return {"status": "LMT321 live"}
-    @app.get("/v1/health")
-    @app.get("/health")
+
+@app.get("/v1/health")
+@app.get("/health")
 def health():
     return {
         "status": "ok",
