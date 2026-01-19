@@ -2,9 +2,13 @@ from fastapi import FastAPI
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List, Literal
 from datetime import datetime
-
+from uuid import uuid4
 app = FastAPI(title="LMT321", version="0.1.0")
-
+# ----------------------------
+# In-memory store (Phase A)
+# NOTE: This resets on redeploy. Database comes later.
+# ----------------------------
+JOBS: Dict[str, dict] = {}
 
 # -----------------------------
 # Health / status
@@ -23,7 +27,47 @@ def v1_health():
         "version": "v1",
         "ts": datetime.utcnow().isoformat()
     }
+# ----------------------------
+# Jobs (Phase A: intake + read)
+# ----------------------------
 
+@app.post("/v1/jobs/intake", response_model=JobResponse)
+def job_intake(payload: JobRequest):
+    job_id = str(uuid4())
+    received_at = datetime.utcnow().isoformat()
+
+    JOBS[job_id] = {
+        "job_id": job_id,
+        "received_at": received_at,
+        "data": payload.model_dump(),
+    }
+
+    return JobResponse(
+        job_id=job_id,
+        received_at=received_at,
+        data=payload
+    )
+
+
+@app.get("/v1/jobs/{job_id}")
+def job_get(job_id: str):
+    job = JOBS.get(job_id)
+    if not job:
+        return {"ok": False, "error": "job_not_found", "job_id": job_id}
+    return {"ok": True, **job}
+
+
+@app.get("/v1/jobs")
+def job_list():
+    # lightweight list view
+    return {
+        "ok": True,
+        "count": len(JOBS),
+        "jobs": [
+            {"job_id": j["job_id"], "received_at": j["received_at"]}
+            for j in JOBS.values()
+        ],
+    }
 # ----------------------------
 # Versioned engine routes (protected)
 # ----------------------------
@@ -59,7 +103,10 @@ class JobRequest(BaseModel):
     roles_needed: List[Role] = []
     headcount: Optional[int] = None
     budget_notes: Optional[str] = None
-
+class JobResponse(BaseModel):
+    job_id: str
+    received_at: str
+    data: JobRequest
 
 class Availability(BaseModel):
     tech_name: str
