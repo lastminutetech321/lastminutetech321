@@ -73,6 +73,58 @@ def job_list():
         "jobs": [
             {"job_id": j["job_id"], "received_at": j["received_at"]}
             for j in JOBS.values()
+            # ----------------------------
+# Availability (Phase C)
+# ----------------------------
+
+@app.post("/v1/availability/submit", response_model=AvailabilityResponse)
+def availability_submit(payload: AvailabilityBlock):
+    availability_id = str(uuid4())
+    received_at = datetime.utcnow().isoformat()
+
+    AVAILABILITY[availability_id] = {
+        "availability_id": availability_id,
+        "received_at": received_at,
+        "data": payload.model_dump(),
+    }
+
+    return AvailabilityResponse(
+        availability_id=availability_id,
+        received_at=received_at,
+        data=payload,
+    )
+
+
+@app.get("/v1/availability/{availability_id}")
+def availability_get(availability_id: str):
+    item = AVAILABILITY.get(availability_id)
+    if not item:
+        return {"ok": False, "error": "availability_not_found", "availability_id": availability_id}
+    return {"ok": True, **item}
+
+
+@app.post("/v1/match/{job_id}")
+def match_job(job_id: str):
+    job = JOBS.get(job_id)
+    if not job:
+        return {"ok": False, "error": "job_not_found", "job_id": job_id}
+
+    job_data = job.get("data", {})
+    roles_needed = set(job_data.get("roles_needed", []) or [])
+
+    matches = []
+    for _, avail in AVAILABILITY.items():
+        a = avail.get("data", {})
+        role = a.get("role")
+        if role in roles_needed:
+            matches.append(avail)
+
+    return {
+        "ok": True,
+        "job_id": job_id,
+        "match_count": len(matches),
+        "matches": matches,
+    }
         ],
     }
 # ----------------------------
