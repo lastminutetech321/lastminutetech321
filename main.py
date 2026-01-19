@@ -1,3 +1,5 @@
+import os
+from fastapi import Header, HTTPException, Depends
 from pydantic import BaseModel, EmailStr, field_validator
 from fastapi import FastAPI
 from pydantic import BaseModel, EmailStr
@@ -5,6 +7,14 @@ from typing import Optional, List, Literal
 from datetime import datetime
 from uuid import uuid4
 app = FastAPI(title="LMT321", version="0.1.0")
+API_KEY = os.getenv("LMT321_API_KEY", "")  # set in DigitalOcean env vars
+
+def require_api_key(x_api_key: Optional[str] = Header(default=None)) -> None:
+    if not API_KEY:
+        # If you forgot to set env var, fail closed (safer)
+        raise HTTPException(status_code=500, detail="Server misconfigured: missing API key")
+    if x_api_key != API_KEY:
+        raise HTTPException(status_code=401, detail="Unauthorized")
 # ----------------------------
 # In-memory store (Phase A)
 # NOTE: This resets on redeploy. Database comes later.
@@ -77,7 +87,7 @@ def job_list():
 # Availability (Phase C)
 # ----------------------------
 
-@app.post("/v1/availability/submit", response_model=AvailabilityResponse)
+@app.post("/v1/availability/submit", response_model=AvailabilityResponse, dependencies=[Depends(require_api_key)])
 def availability_submit(payload: AvailabilityBlock):
     availability_id = str(uuid4())
     received_at = datetime.utcnow().isoformat()
@@ -103,7 +113,7 @@ def availability_get(availability_id: str):
     return {"ok": True, **item}
 
 
-@app.post("/v1/match/{job_id}")
+@app.post("/v1/match/{job_id}", dependencies=[Depends(require_api_key)])
 def match_job(job_id: str):
     job = JOBS.get(job_id)
     if not job:
@@ -130,7 +140,7 @@ def match_job(job_id: str):
 # ----------------------------
 # Versioned engine routes (protected)
 # ----------------------------
-@app.get("/v1/engine/ping")
+@app.get("/v1/engine/ping", dependencies=[Depends(require_api_key)])
 def engine_ping():
     return {"engine": "ok"}
 
