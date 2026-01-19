@@ -85,6 +85,8 @@ Role = Literal[
     "Camera Op", "Utility"
 ]
 
+from pydantic import field_validator
+
 class JobRequest(BaseModel):
     client_name: str
     client_company: Optional[str] = None
@@ -98,11 +100,28 @@ class JobRequest(BaseModel):
     state: Optional[str] = None
     notes: Optional[str] = None
 
-    start_time: Optional[str] = None  # keep as string for now (simple)
+    start_time: Optional[str] = None
     end_time: Optional[str] = None
     roles_needed: List[Role] = []
     headcount: Optional[int] = None
     budget_notes: Optional[str] = None
+
+    @field_validator("client_name")
+    @classmethod
+    def client_name_not_blank(cls, v: str) -> str:
+        v = v.strip()
+        if not v:
+            raise ValueError("client_name is required")
+        return v
+
+    @field_validator("headcount")
+    @classmethod
+    def headcount_positive(cls, v: Optional[int]) -> Optional[int]:
+        if v is None:
+            return v
+        if v <= 0:
+            raise ValueError("headcount must be > 0")
+        return v
 class JobResponse(BaseModel):
     job_id: str
     received_at: str
