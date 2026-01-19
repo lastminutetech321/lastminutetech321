@@ -9,13 +9,27 @@ app = FastAPI(title="LMT321", version="0.1.0")
 # -----------------------------
 # Health / status
 # -----------------------------
+from datetime import datetime
+
 @app.get("/")
 def root():
     return {"status": "LMT321 live"}
 
-@app.get("/health")
-def health():
-    return {"ok": True, "service": "LMT321", "ts": datetime.utcnow().isoformat() + "Z"}
+@app.get("/v1/health")
+def v1_health():
+    return {
+        "status": "ok",
+        "service": "LMT321",
+        "version": "v1",
+        "ts": datetime.utcnow().isoformat()
+    }
+
+# ----------------------------
+# Versioned engine routes (protected)
+# ----------------------------
+@app.get("/v1/engine/ping")
+def engine_ping():
+    return {"engine": "ok"}
 
 
 # -----------------------------
