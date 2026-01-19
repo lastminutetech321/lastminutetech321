@@ -123,6 +123,18 @@ class JobRequest(BaseModel):
 
     @field_validator("headcount")
     @classmethod
+    class AvailabilityBlock(BaseModel):
+    tech_name: str
+    tech_email: Optional[EmailStr] = None
+    role: Role
+    start_time: str
+    end_time: str
+
+
+class AvailabilityResponse(BaseModel):
+    availability_id: str
+    received_at: str
+    data: AvailabilityBlock
     def headcount_positive(cls, v: Optional[int]) -> Optional[int]:
         if v is None:
             return v
