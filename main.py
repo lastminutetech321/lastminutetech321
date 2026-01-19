@@ -10,6 +10,12 @@ app = FastAPI(title="LMT321", version="0.1.0")
 # NOTE: This resets on redeploy. Database comes later.
 # ----------------------------
 JOBS: Dict[str, dict] = {}
+# ----------------------------
+# In-memory store (Phase C)
+# NOTE: This resets on redeploy. Database comes later.
+# ----------------------------
+AVAILABILITY: Dict[str, dict] = {}
+
 
 # -----------------------------
 # Health / status
