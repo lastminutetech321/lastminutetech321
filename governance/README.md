@@ -1,53 +1,86 @@
 # Governance Layer
 
-This directory contains the governing documents, doctrines, and constraints that define how the Nautical Compass system may evolve.
+This directory defines the constitutional, operational, and constraint framework
+for the Nautical Compass system.
 
-No application logic is permitted to override governance.
+Governance precedes execution.
+No application behavior may override governance rules.
+
+---
 
 ## Purpose
 
-Governance exists to:
-- Establish authority, scope, and limits
-- Prevent misrepresentation or unauthorized capability claims
-- Ensure consistency across public and private use
-- Separate interpretation from execution
-- Preserve long-term institutional integrity
+The governance layer exists to:
 
-All system behavior must align with these documents.
+- Define system authority and limits
+- Establish non-negotiable constraints
+- Control capability exposure
+- Govern intake, analysis, and outputs
+- Preserve long-term integrity and trust
 
-## What Lives Here
+Governance is declarative, not reactive.
 
-This folder may contain:
-- Constitutional documents
-- Charters and doctrines
-- Access control rules
-- Compensation and role constraints
-- Risk elimination frameworks
-- Amendment and versioning rules
+---
 
-These files are **authoritative**.
+## Scope
 
-## Enforcement Rule
+This layer may:
 
-If application code conflicts with governance:
-- Governance prevails
-- Code must be revised or disabled
-- No exception process exists outside defined amendment rules
+- Allow or deny access
+- Create obligations
+- Trigger enforcement
+- Establish representation
+- Define escalation thresholds
 
-## Immutability
+This layer does NOT:
 
-Certain governance documents may be designated as immutable.
-Immutable documents:
-- Cannot be altered by contributors
-- Cannot be bypassed by features
-- Can only be amended through formal versioned processes
+- Execute business logic
+- Process user requests
+- Perform analysis
 
-## Relationship to Application Layer
+---
 
-The application layer:
-- Implements governance
-- Does not reinterpret governance
-- Does not expand authority
-- Does not imply legal, financial, or professional guarantees
+## Authority Model
 
-Governance precedes execution.
+Governance operates as the highest layer in the system hierarchy.
+
+Order of precedence:
+
+1. Governance
+2. Intake
+3. Analysis
+4. Application logic
+5. Output
+
+If a lower layer conflicts with governance, governance prevails.
+
+---
+
+## Change Control
+
+Governance rules are:
+
+- Versioned
+- Auditable
+- Intentionally slow to change
+
+No automated process may modify governance without explicit authorization.
+
+---
+
+## Relationship to Other Layers
+
+- Intake is governed by this layer
+- Analysis is constrained by this layer
+- Application code must defer to this layer
+
+Governance does not observe.
+Governance decides.
+
+---
+
+## Status
+
+Active.
+Foundational.
+Non-optional.
