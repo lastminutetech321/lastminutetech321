@@ -1,4 +1,4 @@
-# Application Layer
+Application Layer
 
 Future application code lives here.
 
